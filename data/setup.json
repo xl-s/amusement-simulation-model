@@ -1,0 +1,956 @@
+{
+    "simulation": {
+        "duration": 720
+    },
+    "parkgoers": {
+        "rate": {
+            "polynomial": [25.28, 0.01972, -0.0000508]
+        },
+        "movespeed": 0.125,
+        "speedrange": 0.025,
+        "privileges": [
+            {
+                "privilege": "priority",
+                "probability": 0.4
+            },
+            {
+                "privilege": null,
+                "probability": 0.6
+            }
+        ],
+        "groupsize": [
+            {
+                "size": 1,
+                "probability": 0.3
+            },
+            {
+                "size": 2,
+                "probability": 0.3
+            },
+            {
+                "size": 3,
+                "probability": 0.15
+            },
+            {
+                "size": 4,
+                "probability": 0.15
+            },
+            {
+                "size": 5,
+                "probability": 0.1
+            }
+        ]
+    },
+    "activities": [
+        {
+            "label": "Ticketing",
+            "icon": "booth",
+            "position": {
+                "angle": 0
+            },
+            "processes": [
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                }
+            ],
+            "queues": [
+                {
+                    "display": {
+                        "offset": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angle": 270,
+                        "spacing": 0.0125
+                    }
+                }
+            ],
+            "station": "before"
+        },
+        {
+            "label": "Gantry",
+            "icon": "turnstile",
+            "position": {
+                "angle": 36
+            },
+            "processes": [
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                }
+            ],
+            "queues": [
+                {
+                    "display": {
+                        "offset": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angle": 36,
+                        "spacing": 0.0125
+                    }
+                }
+            ],
+            "station": "before"
+        },
+        {
+            "label": "Exit",
+            "icon": "door",
+            "position": {
+                "angle": 324
+            },
+            "processes": [
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                },
+                {
+                    "duration": 1,
+                    "capacity": 1,
+                    "type": "group"
+                }
+            ],
+            "queues": [
+                {
+                    "display": {
+                        "offset": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angle": 144,
+                        "spacing": 0.0125
+                    }
+                }
+            ],
+            "station": "after"
+        },
+        {
+            "label": "Roller Coaster",
+            "icon": "coaster",
+            "position": {
+                "angle": 72
+            },
+            "processes": [
+                {
+                    "duration": 3,
+                    "capacity": 16
+                }
+            ],
+            "queues": [
+                {
+                    "display": {
+                        "offset": {
+                            "angle": 162
+                        },
+                        "angle": 252,
+                        "spacing": 0.0125
+                    }
+                },
+                {
+                    "display": {
+                        "offset": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angle": 252,
+                        "spacing": 0.0125
+                    },
+                    "privileges": ["single"]
+                },
+                {
+                    "display": {
+                        "offset": {
+                            "angle": 342
+                        },
+                        "angle": 252,
+                        "spacing": 0.0125
+                    },
+                    "privileges": ["priority"]
+                }
+            ],
+            "popularity": 0.13
+        },
+        {
+            "label": "Ferris Wheel",
+            "icon": "ferris",
+            "relativeProcesses": true,
+            "position": {
+                "angle": 108 
+            },
+            "processes": [
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                },
+                {
+                    "duration": 15,
+                    "capacity": 6
+                }
+            ],
+            "queues": [
+                {
+                    "display": {
+                        "offset": {
+                            "angle": 198
+                        },
+                        "angle": 288,
+                        "spacing": 0.0125
+                    }
+                },
+                {
+                    "display": {
+                        "offset": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angle": 288,
+                        "spacing": 0.0125
+                    },
+                    "privileges": ["single"]
+                },
+                {
+                    "display": {
+                        "offset": {
+                            "angle": 8
+                        },
+                        "angle": 288,
+                        "spacing": 0.0125
+                    },
+                    "privileges": ["priority"]
+                }
+            ],
+            "popularity": 0.28
+        },
+        {
+            "label": "Merry-Go-Round",
+            "icon": "merry",
+            "position": {
+                "angle": 144
+            },
+            "processes": [
+                {
+                    "duration": 4,
+                    "durationRange": 1,
+                    "capacity": 36
+                }
+            ],
+            "queues": [
+                {
+                    "display": {
+                        "offset": {
+                            "angle": 234
+                        },
+                        "angle": 324,
+                        "spacing": 0.0125
+                    }
+                },
+                {
+                    "display": {
+                        "offset": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angle": 324,
+                        "spacing": 0.0125
+                    },
+                    "privileges": ["single"]
+                },
+                {
+                    "display": {
+                        "offset": {
+                            "angle": 54
+                        },
+                        "angle": 324,
+                        "spacing": 0.0125
+                    },
+                    "privileges": ["priority"]
+                }
+            ],
+            "popularity": 0.225
+        },
+        {
+            "label": "Drop Tower",
+            "icon": "tower",
+            "position": {
+                "angle": 180
+            },
+            "processes": [
+                {
+                    "duration": 3,
+                    "capacity": 40
+                }
+            ],
+            "queues": [
+                {
+                    "display": {
+                        "offset": {
+                            "angle": 270
+                        },
+                        "angle": 0,
+                        "spacing": 0.0125
+                    }
+                },
+                {
+                    "display": {
+                        "offset": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angle": 0,
+                        "spacing": 0.0125
+                    },
+                    "privileges": ["single"]
+                },
+                {
+                    "display": {
+                        "offset": {
+                            "angle": 90
+                        },
+                        "angle": 0,
+                        "spacing": 0.0125
+                    },
+                    "privileges": ["priority"]
+                }
+            ],
+            "popularity": 0.333
+        },
+        {
+            "label": "Pirate Ship",
+            "icon": "ship",
+            "position": {
+                "angle": 216
+            },
+            "processes": [
+                {
+                    "duration": 6,
+                    "durationRange": 1,
+                    "capacity": 55
+                }
+            ],
+            "queues": [
+                {
+                    "display": {
+                        "offset": {
+                            "angle": 306
+                        },
+                        "angle": 36,
+                        "spacing": 0.0125
+                    }
+                },
+                {
+                    "display": {
+                        "offset": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angle": 36,
+                        "spacing": 0.0125
+                    },
+                    "privileges": ["single"]
+                },
+                {
+                    "display": {
+                        "offset": {
+                            "angle": 126
+                        },
+                        "angle": 36,
+                        "spacing": 0.0125
+                    },
+                    "privileges": ["priority"]
+                }
+            ],
+            "popularity": 0.229
+        },
+        {
+            "label": "Bumper Cars",
+            "icon": "bumper",
+            "position": {
+                "angle": 252
+            },
+            "processes": [
+                {
+                    "duration": 15,
+                    "durationRange": 1,
+                    "capacity": 23
+                },
+                {
+                    "duration": 15,
+                    "durationRange": 1,
+                    "capacity": 23
+                }
+            ],
+            "queues": [
+                {
+                    "display": {
+                        "offset": {
+                            "angle": 342
+                        },
+                        "angle": 72,
+                        "spacing": 0.0125
+                    }
+                },
+                {
+                    "display": {
+                        "offset": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angle": 72,
+                        "spacing": 0.0125
+                    },
+                    "privileges": ["single"]
+                },
+                {
+                    "display": {
+                        "offset": {
+                            "angle": 162
+                        },
+                        "angle": 72,
+                        "spacing": 0.0125
+                    },
+                    "privileges": ["priority"]
+                }
+            ],
+            "popularity": 0.0765
+        },
+        {
+            "label": "Log Ride",
+            "icon": "flume",
+            "position": {
+                "angle": 288
+            },
+            "processes": [
+                {
+                    "duration": 9,
+                    "durationRange": 1,
+                    "capacity": 5
+                },
+                {
+                    "duration": 9,
+                    "durationRange": 1,
+                    "capacity": 5
+                },
+                {
+                    "duration": 9,
+                    "durationRange": 1,
+                    "capacity": 5
+                },
+                {
+                    "duration": 9,
+                    "durationRange": 1,
+                    "capacity": 5
+                },
+                {
+                    "duration": 9,
+                    "durationRange": 1,
+                    "capacity": 5
+                },
+                {
+                    "duration": 9,
+                    "durationRange": 1,
+                    "capacity": 5
+                },
+                {
+                    "duration": 9,
+                    "durationRange": 1,
+                    "capacity": 5
+                },
+                {
+                    "duration": 9,
+                    "durationRange": 1,
+                    "capacity": 5
+                },
+                {
+                    "duration": 9,
+                    "durationRange": 1,
+                    "capacity": 5
+                }
+            ],
+            "queues": [
+                {
+                    "display": {
+                        "offset": {
+                            "angle": 18
+                        },
+                        "angle": 108,
+                        "spacing": 0.0125
+                    }
+                },
+                {
+                    "display": {
+                        "offset": {
+                            "x": 0,
+                            "y": 0
+                        },
+                        "angle": 108,
+                        "spacing": 0.0125
+                    },
+                    "privileges": ["single"]
+                },
+                {
+                    "display": {
+                        "offset": {
+                            "angle": 198
+                        },
+                        "angle": 108,
+                        "spacing": 0.0125
+                    },
+                    "privileges": ["priority"]
+                }
+            ],
+            "popularity": 0.125
+        }
+    ]
+}
