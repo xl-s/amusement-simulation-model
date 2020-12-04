@@ -46,7 +46,7 @@
     				"duration": (mean length of activity),
     				"durationRange": (optional, variation of length of activity),
     				"capacity": (maximum parkgoers in this process),
-    				"type" (optional defaulting to 'group', either 'group' where capacity refers to the total number of groups, or 'person' where capacity refers to the total number of persons)
+    				"type" (optional defaulting to 'person', either 'group' where capacity refers to the total number of groups, or 'person' where capacity refers to the total number of persons)
     			}
     		],
     		"queues": [
