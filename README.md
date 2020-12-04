@@ -86,7 +86,8 @@ The following options for `activities.icon` are available:
 The following options for `activities.consumer` are available:
 
 * `turnBased`: parkgoers are drawn from queues in a turned-based ordering.
-* `longestQueue` parkgoers are drawn from the longest queue.
+* `longestQueue`: parkgoers are drawn from the longest queue.
+* `custom`: parkgoers are drawn from "priority" queue until at least  half the ride is full, then from the unprivileged queue, then from "single" queue.
 
 The following options for `activities.assigner` are available:
 

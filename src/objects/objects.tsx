@@ -185,6 +185,7 @@ class Activity {
 	processes: Process[];
 	queues: Queue[];
 	consumer: Generator<Queue[], Queue, Process>;
+	consumerFunction: (Process) => void;
 	assigner: (queues: Queue[], parkgoer: Parkgoer) => Queue;
 	popularity: number;
 	relativeProcesses: {window: number, index: number};
@@ -277,9 +278,50 @@ class Activity {
 		if (!this.queues.length) throw "At least one queue is required";
 
 		// consumer is a generator function that returns the queue to draw from
-		if (params.consumer) this.consumer = Activity.Consumers[params.consumer](this.queues);
-		else this.consumer = Activity.turnBasedConsumer(this.queues);
-		this.consumer.next(); // initialize
+		if (params.consumer) {
+			if (params.consumer in Activity.Consumers) this.consumer = Activity.Consumers[params.consumer](this.queues);
+		} else {
+			this.consumer = Activity.turnBasedConsumer(this.queues);
+		}
+		if (this.consumer) {
+			this.consumer.next(); // initialize
+			this.consumerFunction = (proc) => {
+				while (!proc.full()) {
+					const queue = this.consumer.next(proc).value;
+					if (!queue) break;
+					const parkgoer = queue.pop();
+					proc.seat(parkgoer);
+				}
+				if (!proc.empty()) proc.start();
+			};
+		} else {
+			// custom function which cannot be implemented with generator
+			// assume that we have single rider queues, normal queues, and priority queues
+			this.consumerFunction = (proc) => {
+				const priorityQueues = this.queues.filter((queue) => queue.privileges.has("priority"));
+				const normalQueues = this.queues.filter((queue) => !queue.privileges.size);
+				const singleQueues = this.queues.filter((queue) => queue.privileges.has("single"));
+				const priorityRatio = 0.5;
+				const fillFrom = (queueSet) => {
+					const queues = queueSet.filter((queue) => queue.peek() ? !proc.full(queue.peek()) : false);
+					if (!queues.length) return false;
+					const parkgoer = queues[0].pop();
+					proc.seat(parkgoer);
+					return true;
+				};
+				// take groups from priority until >= 50% of capacity filled
+				while (proc.length() < priorityRatio * proc.capacity) {
+					if (!fillFrom(priorityQueues)) break;
+				}
+				while (!proc.full()) {
+					if (!fillFrom(normalQueues)) break;
+				}
+				while (!proc.full()) {
+					if (!fillFrom(singleQueues)) break;
+				}
+				if (!proc.empty()) proc.start();
+			};
+		}
 
 		// assigner is a function that takes in parkgoer and queues that returns the queue to add to
 		if (params.assigner) this.assigner = Activity.Assigners[params.assigner];
@@ -325,15 +367,7 @@ class Activity {
 		} else {
 			processes = this.processes.filter((proc) => !proc.active);
 		}
-		processes.forEach((proc) => {
-			while (!proc.full()) {
-				const queue = this.consumer.next(proc).value;
-				if (!queue) break;
-				const parkgoer = queue.pop();
-				proc.seat(parkgoer);
-			}
-			if (!proc.empty()) proc.start();
-		});
+		processes.forEach(this.consumerFunction);
 	}
 
 	retrieve() {
