@@ -123,7 +123,7 @@ const Canvas = ({ time, width, height }): React.FC => {
 const ActivityPane = (): React.FC => {
 	return (
 		<List
-			style={{width: 450, height: 800, overflow: "auto"}}
+			style={{width: "100%", height: "100%", maxWidth: "25vw", maxHeight: "100vh", overflow: "auto"}}
 			itemLayout="vertical"
 			dataSource={Activity.all()}
 			renderItem={(activity) => {
