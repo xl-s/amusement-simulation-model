@@ -167,3 +167,71 @@ The following options for `activities.assigner` are available:
 }
 ```
 
+### Model Architecture
+
+The model is written in TypeScript and utilizes the ReactJS framework and Ant Design component library for the user interface. The source code is compiled with Gatsby to optimize and improve the speed of the simulation.
+
+#### Overview
+
+The model uses an object-oriented paradigm. The following objects are relevant to the model:
+
+* `Parkgoer` — represents a parkgoer agent that may be either a single visitor to the park, or a group of visitors that participate in all activities together. A `Parkgoer` has an `itinerary`, which is a set of `Activity` that they will complete within the park, as well as a set of `privileges` that determine which queues they can join. A `Parkgoer` may be in one of three states: `"FREE"`, in which they are moving around the park to their next destination, `"WAIT"`, in which they are waiting in the `Queue` of an `Activity`, and `"BUSY"`, in which they are participating in a `Process` of an `Activity`.
+* `Process` — represents the actual "activity" portion of an `Activity`. A `Process` has a `capacity`, which is the maximum total of parkgoers that may attend the ride at a time, and a `duration`, which is the time that the `Process` runs for before the attending parkgoers are released from it.
+* `Queue` — represents a queue in which parkgoer agents reside in while waiting for their turn in a `Process`.
+* `Activity` — represents an activity that parkgoer agents may participate in. An `Activity` consists of at least one `Queue` and at least one `Process`. In addition, the `Activity` defines `assigner` and `consumer` policies. When a `Parkgoer` is assigned to the `Activity`, the `assigner` policy determines the `Queue` which the `Parkgoer` joins. When a `Process` is ready to accept a new `Parkgoer`, the `consumer` policy determines the `Queue` which this `Parkgoer` will be drawn from.
+
+#### Iteration
+
+![](https://xuliang.dev/static/useinterval.png)
+
+When the simulation is run, an `iterate` function is called at a set interval, which triggers the respective `iterate` methods of the active `Parkgoer` and `Activity` objects, as well as a `log` method which writes relevant information to a record that is exported at the end of the simulation. New parkgoers are also added to the park and assigned an `itinerary`, number of `people`, and set of `privileges`.
+
+![](https://xuliang.dev/static/iterate.png)
+
+The `iterate` method of a `Parkgoer` object  checks whether the parkgoer's itinerary has been completed, and if so, removes itself from the simulation. Otherwise, if it is in a `"FREE"` state, it executes movement logic, and assigns it to the next target activity if it has arrived. `"WAIT"` and `"BUSY"` states are handled by the relevant `Activity`.
+
+![](https://xuliang.dev/static/parkgoer.iterate.png)
+
+The `iterate` method of an `Activity` object first calls the `iterate` method of its `Process`. Then, it acquires new `Parkgoer`s into idle processes using its defined `consumer`. An `Activity` may be set with a `relativeProcesses` attribute, which locks the entry ordering of processes into a fixed rotation (an example from the default configuration is the Ferris Wheel ride).
+
+![](https://xuliang.dev/static/activity.iterate.png)
+
+The `consumer` is typically defined with a generator function. The default configuration uses a custom `consumer`, which attempts to draw parkgoers from the priority queue until the process is at half capacity, then from the normal queue, before filling in the remaining capacity from the single rider queue.
+
+![](https://xuliang.dev/static/consumerfunction.png)
+
+Within the `iterate` method of a `Process`, an internal `time` counter is incremented until it exceeds the currently set `duration`, after which it releases its parkgoers, who then become free to move to the next activity in their itinerary.
+
+![](https://xuliang.dev/static/process.iterate.png)
+
+Parkgoers must first complete all of the activities within `stations.before` in their defined order, followed by all of the ride activities, before finishing off with the activities in `stations.after`. When selecting a ride activity, a greedy policy is used; the next activity will be set as the one with the shortest queue which the parkgoer is able to join.
+
+![](https://xuliang.dev/static/parkgoer.getnexttarget.png)
+
+#### Random Variate Generation
+
+![](https://xuliang.dev/static/loadsim.png)
+
+##### Parkgoer Entries
+
+Parkgoer entries are generated from a polynomial rate distribution. The number of people entering the park at time `t` is Poisson-distributed with parameter $\begin{bmatrix}c_0 && c_1 && c_2 && \cdots\end{bmatrix}\begin{bmatrix}1\\t\\t^2\\\vdots\end{bmatrix}$.
+
+![](https://xuliang.dev/static/parkgoerrate.png)
+
+##### Privileges
+
+Parkgoer privileges are generated with the inverse-transform method, corresponding to a P.M.F. that is specified in the configuration.
+
+![](https://xuliang.dev/static/getprivilege.png)
+
+##### Group Size
+
+Parkgoer group sizes are generated similarly to parkgoer privileges, using the inverse-transform method and corresponding to a P.M.F. that is specified in the configuration.
+
+![](https://xuliang.dev/static/getpeople.png)
+
+##### Itinerary
+
+Rides are included in an itinerary with probability equal to their popularity. Stations are required activities that are appended to the itinerary.
+
+![](https://xuliang.dev/static/getitinerary.png)
