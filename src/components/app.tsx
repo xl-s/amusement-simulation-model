@@ -58,16 +58,18 @@ function getPeople(groupsize): number {
 	return 1;
 }
 
-function getItinerary(): Activity[] {
+function getItinerary(): { rides: Activity[], stations: {before: Activity[], after: Activity[]} } {
 	let rides = [];
 	while (!rides.length) {
 		rides = shuffle(Activity.activities).filter((ride) => random.float() < ride.popularity);
 	}
-	return [
-		...Activity.stations.before,
-		...rides,
-		...Activity.stations.after,
-	];
+	return {
+		stations: {
+			before: [...Activity.stations.before],
+			after: [...Activity.stations.after],
+		},
+		rides: rides
+	}
 }
 
 const ParkgoerComponent = ({ parkgoer, width, height }: { parkgoer: Parkgoer, width: number, height: number }): React.FC => {
@@ -220,6 +222,7 @@ const App = (): React.FC => {
 
 	useInterval(() => {
 		if (Parkgoer.all().length === 0 && time > duration) {
+			// TODO simulation done, display end screen
 			setSimulation(false);
 			exportRecords();
 		}

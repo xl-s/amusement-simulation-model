@@ -347,6 +347,10 @@ class Activity {
 		queue.push(parkgoer);
 	}
 
+	peekLength(parkgoer) {
+		return this.assigner(this.queues, parkgoer).length();
+	}
+
 	visible() {
 		return true;
 	}
@@ -394,9 +398,10 @@ class Parkgoer {
 	state: string;
 	position: Point;
 	privileges: Set<string>;
-	itinerary: Activity[];
+	itinerary: {rides: Activity[], stations: {before: Activity[], after: Activity[]}};
 	movespeed: number;
 	people: number;
+	nextTarget: Activity;
 	record: {time: number, state: string, next: string}[];
 
 	static parkgoers: Parkgoer[] = [];
@@ -415,6 +420,7 @@ class Parkgoer {
 		if (params.people === 1) privileges.push("single");
 		this.privileges = new Set(privileges);
 		this.itinerary = params.itinerary;
+		this.nextTarget = this.getNextTarget();
 		this.movespeed = params.movespeed;
 		this.record = []
 		Parkgoer.parkgoers.push(this);
@@ -428,15 +434,36 @@ class Parkgoer {
 		return false;
 	}
 
+	getNextTarget() {
+		if (this.nextTarget) {
+			if (this.itinerary.stations.before.indexOf(this.nextTarget) !== -1) {
+				this.itinerary.stations.before.splice(this.itinerary.stations.before.indexOf(this.nextTarget), 1);
+			} else if (this.itinerary.rides.indexOf(this.nextTarget) !== -1) {
+				this.itinerary.rides.splice(this.itinerary.rides.indexOf(this.nextTarget), 1);
+			} else if (this.itinerary.stations.after.indexOf(this.nextTarget) !== -1) {
+				this.itinerary.stations.after.splice(this.itinerary.rides.indexOf(this.nextTarget), 1);
+			}
+		}
+		if (this.itinerary.stations.before.length) {
+			return this.itinerary.stations.before[0];
+		} else if (this.itinerary.rides.length) {
+			return this.itinerary.rides.reduce((current, ride) => ride.peekLength(this) < current.peekLength(this) ? ride : current);
+		} else if (this.itinerary.stations.after.length) {
+			return this.itinerary.stations.after[0];
+		} else {
+			return null;
+		}
+	}
+
 	next() {
-		return this.itinerary.length ? this.itinerary[0] : null;
+		return this.nextTarget;
 	}
 
 	complete() {
 		const position = this.next().position;
 		this.position = new Point({x: position.x, y: position.y});
-		this.itinerary.splice(0, 1);
 		this.state = "FREE";
+		this.nextTarget = this.getNextTarget();
 	}
 
 	visible() {
