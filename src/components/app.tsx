@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import useInterval from "react-useinterval";
 import random from "random";
-import { Process, Queue, Activity, Parkgoer, iterate, exportRecords } from "../objects/objects";
+import { Process, Queue, Activity, Parkgoer, iterate, getRecords, exportRecords } from "../objects/objects";
 import { FaUser, FaFlag, FaUsers, FaUserFriends, FaRegPlayCircle, FaRegPauseCircle } from "react-icons/fa";
 import { PlayCircleOutlined, PauseCircleOutlined } from "@ant-design/icons";
-import { Button, Row, Col, List, Tooltip, Collapse, Switch, Space, Slider, Typography, Statistic, Card, Upload } from "antd";
+import { Button, Row, Col, List, Tooltip, Collapse, Switch, Space, Slider, Typography, Statistic, Card, Upload, Modal } from "antd";
 import Specification from "../../data/setup.json";
 import grassTile from "../images/grass.png";
 import ActivityIcons from "./icons";
@@ -176,9 +176,77 @@ const ActivityPane = (): React.FC => {
 	);
 };
 
+const FinalPage = ({ visible, setVisible }: { visible: boolean, setVisible: (vis: boolean) => void }): React.FC => {
+	const [records, setRecords] = useState(null);
+
+	useEffect(() => {
+		setRecords(getRecords());
+	}, []);
+
+	if (!records) return null;
+
+	const capitalize = (text) => {
+		return text.split(", ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(", ");
+	};
+
+	return (
+		<Modal 
+			title="Simulation Complete"
+			visible={visible}
+			width={800}
+			footer={null}
+			style={{top: 20}}
+			onCancel={() => setVisible(false)}
+		>	
+			<Space direction="vertical" style={{width: "100%"}} size={20}>
+			<Button style={{height: 60, fontSize: 24}} block type="primary" onClick={() => exportRecords(records)}>Download Data</Button>
+			<Row>
+			{Object.keys(records.statistics.parkgoers).map((key, ind) => (
+				<Col xs={6} key={ind}>
+					<Statistic title={capitalize(key)} value={records.statistics.parkgoers[key]} />
+				</Col>
+			))}
+			</Row>
+			<List
+				itemLayout="vertical"
+				dataSource={[...records.activities.stations.before, ...records.activities.rides, ...records.activities.stations.after]}
+				renderItem={(activity) => {
+					return (<List.Item>
+						<List.Item.Meta
+							avatar={<img src={ActivityIcons[activity.icon]} style={{width: 20, height: 20}} />}
+							title={activity.label}
+							description={`Total Visitors: ${activity.statistics.parkgoers}`}
+						/>
+						<Collapse defaultActiveKey={["queues"]}>
+							<Collapse.Panel key="queues" header="Queues">
+							<List
+								style={{marginTop: -18, marginBottom: -24}}
+								dataSource={activity.queues}
+								renderItem={(queue: {privileges: string[], statistics: {meanWaitTime: number}}) => (
+									<List.Item>
+										<List.Item.Meta
+											avatar={<FaUsers style={{transform: "translateY(3px)"}} />}
+											title={`Privileges: ${queue.privileges.length ? queue.privileges.join(", ") : "None"}`}
+											description={`Average Waiting Time: ${Math.round(queue.statistics.meanWaitTime * 100)/100} minutes`}
+										/>
+									</List.Item>
+								)}
+							/>
+							</Collapse.Panel>
+						</Collapse>
+					</List.Item>);
+				}}
+			/>
+			</Space>
+		</Modal>
+	);
+};
+
 const App = (): React.FC => {
 	const [time, setTime] = useState<number>(0);
 	const [ready, setReady] = useState<boolean>(false);
+	const [done, setDone] = useState<boolean>(false);
+	const [modalVisible, setModalVisible] = useState<boolean>(false);
 	const [delay, setDelay] = useState<number>(100);
 	const [duration, setDuration] = useState<number>(null);
 	const [rate, setRate] = useState<number>(null);
@@ -207,6 +275,7 @@ const App = (): React.FC => {
 	};
 	const reset = () => {
 		setSimulation(false);
+		setDone(false);
 		setReady(false);
 		setTime(0);
 		Parkgoer.parkgoers = [];
@@ -222,9 +291,9 @@ const App = (): React.FC => {
 
 	useInterval(() => {
 		if (Parkgoer.all().length === 0 && time > duration) {
-			// TODO simulation done, display end screen
 			setSimulation(false);
-			exportRecords();
+			setDone(true);
+			setModalVisible(true);
 		}
 		const entrants = entries[time];
 		let total = 0;
@@ -235,7 +304,7 @@ const App = (): React.FC => {
 		}
 		iterate(time);
 		setTime(time + 1);
-	}, simulation ? delay : null);
+	}, simulation && !done ? delay : null);
 	useEffect(() => {
 		resizeWindow();
 		window.addEventListener("resize", resizeWindow);
@@ -243,6 +312,7 @@ const App = (): React.FC => {
 	}, []);
 
 	return (
+		<>
 		<Row style={{height: "100vh"}} align="middle">
 			<Col xs={12}>
 				<Canvas time={time} width={width * 0.5 * 0.9} height={height * 0.9} />
@@ -250,7 +320,7 @@ const App = (): React.FC => {
 			<Col xs={12}>
 				<Row style={{height: "100vh"}} align="middle">
 				<Col xs={12}>
-					<Button type="primary" size="large" style={{width: "90%", height: 60, fontSize: 30}} disabled={!ready} onClick={() => setSimulation(!simulation)}>{simulation ? <PauseCircleOutlined /> : <PlayCircleOutlined />}</Button>
+					<Button type="primary" size="large" style={{width: "90%", height: 60, fontSize: 30}} disabled={!ready || done} onClick={() => setSimulation(!simulation)}>{simulation ? <PauseCircleOutlined /> : <PlayCircleOutlined />}</Button>
 					<br />
 					<br />
 					<Text>Simulation Speed</Text><Slider style={{width: "90%"}} tipFormatter={(val) => `${val} iterations / s`} defaultValue={10} min={1} max={30} onChange={(itps) => setDelay(1000/itps)} />
@@ -263,6 +333,7 @@ const App = (): React.FC => {
 					<Col xs={8}><Card><Statistic title="Busy" value={Parkgoer.all().filter((parkgoer) => parkgoer.state === "BUSY").reduce((total, parkgoer) => total + parkgoer.people, 0)} /></Card></Col>
 					</Row>
 					<br />
+					<Space direction="vertical">
 					<Space direction="horizontal">
 					<Button danger size="large" disabled={!ready} onClick={reset}>Reset</Button>
 					<Button size="large" disabled={ready} onClick={() => loadSim(Specification)}>Load Default</Button>
@@ -273,6 +344,8 @@ const App = (): React.FC => {
 						return false;
 					}}><Button size="large" block disabled={ready}>Load File</Button></Upload>
 					</Space>
+					{done ? <Button size="large" onClick={() => setModalVisible(true)}>View Results</Button> : null}
+					</Space>
 				</Col>
 				<Col xs={12}>
 					<ActivityPane />
@@ -280,6 +353,8 @@ const App = (): React.FC => {
 				</Row>
 			</Col>
 		</Row>
+		{done ? <FinalPage visible={modalVisible} setVisible={setModalVisible} /> : null}
+		</>
 	);
 };
 

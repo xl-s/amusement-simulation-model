@@ -114,7 +114,9 @@ class Queue {
 	queue: Parkgoer[];
 	privileges: Set<string>;
 	display: {parent: Point, offset: Point, angle: number, spacing: number};
-	record: {time: number, length: number}[]
+	record: {time: number, length: number}[];
+	statistics: {waitTimes: number[]} = {waitTimes: []};
+	current: Record<number, number> = {};
 
 	constructor(params, parent) {
 		const angleToPosition = (angle) => ({
@@ -142,6 +144,7 @@ class Queue {
 
 	push(parkgoer) {
 		this.queue.push(parkgoer);
+		this.current[parkgoer.id] = this.record[this.record.length - 1].time;
 		if (this.display) {
 			parkgoer.position = this.position(this.queue.length);
 		} else {
@@ -163,6 +166,10 @@ class Queue {
 		}
 		const parkgoer = this.queue.splice(0, 1)[0];
 		parkgoer.position = null;
+		for (let i=0; i<parkgoer.people; i++) {
+			this.statistics.waitTimes.push(this.record[this.record.length - 1].time - this.current[parkgoer.id]);
+		}
+		delete this.current[parkgoer.id];
 		return parkgoer;
 	}
 
@@ -189,6 +196,7 @@ class Activity {
 	assigner: (queues: Queue[], parkgoer: Parkgoer) => Queue;
 	popularity: number;
 	relativeProcesses: {window: number, index: number};
+	statistics: {parkgoers: number} = {parkgoers: 0};
 
 	static activities = [];
 	static stations = {before: [], after: []};
@@ -345,6 +353,7 @@ class Activity {
 		parkgoer.state = "WAIT";
 		const queue = this.assigner(this.queues, parkgoer);
 		queue.push(parkgoer);
+		this.statistics.parkgoers += parkgoer.people;
 	}
 
 	peekLength(parkgoer) {
@@ -377,12 +386,17 @@ class Activity {
 	retrieve() {
 		return {
 			label: this.label,
+			icon: this.icon,
+			statistics: this.statistics,
 			processes: this.processes.map((proc) => ({
 				capacity: proc.capacity,
 				record: proc.record,
 			})),
 			queues: this.queues.map((queue) => ({
 				privileges: Array.from(queue.privileges),
+				statistics: {
+					meanWaitTime: queue.statistics.waitTimes.reduce((sum, elm) => sum + elm)/queue.statistics.waitTimes.length,
+				},
 				record: queue.record,
 			})),
 		};
@@ -395,6 +409,7 @@ class Activity {
 }
 
 class Parkgoer {
+	id: number;
 	state: string;
 	position: Point;
 	privileges: Set<string>;
@@ -408,11 +423,14 @@ class Parkgoer {
 	static exited: Parkgoer[] = [];
 	static movespeed: number;
 	static speedrange: number;
+	static index = 0;
 	static all = function() {
 		return Parkgoer.parkgoers;
 	};
 
 	constructor(params) {
+		this.id = Parkgoer.index;
+		Parkgoer.index++;
 		this.state = "FREE";
 		this.position = new Point(params.position || {x: 0, y: 0})
 		this.people = params.people;
@@ -504,6 +522,11 @@ class Parkgoer {
 			privileges: Array.from(this.privileges),
 			people: this.people,
 			record: this.record,
+			statistics: {
+				free: this.record.filter((rec) => rec.state === "FREE").length/this.record.length,
+				busy: this.record.filter((rec) => rec.state === "BUSY").length/this.record.length,
+				wait: this.record.filter((rec) => rec.state === "WAIT").length/this.record.length,
+			}
 		};
 	}
 
@@ -514,13 +537,41 @@ class Parkgoer {
 	}
 }
 
-function exportRecords() {
+function reduceByKey(array, key, reducer=null) {
+	const result = {};
+	array.forEach((elm) => {
+		const k = key(elm);
+		if (!k) return;
+		if (k in result) result[k].push(elm);
+		else result[k] = [elm];
+	});
+	if (reducer) Object.keys(result).forEach((k) => result[k] = reducer(result[k]));
+	return result;
+}
+
+function getRecords() {
 	const retrieve = (obj) => obj.retrieve();
-	const data = JSON.stringify({
-		parkgoers: {
-			exited: Parkgoer.exited.map(retrieve),
-			ongoing: Parkgoer.parkgoers.map(retrieve),
+	const parkgoers = [...Parkgoer.parkgoers.map(retrieve), ...Parkgoer.exited.map(retrieve)];
+	const passTypes = reduceByKey(parkgoers, (parkgoer) => parkgoer.privileges.sort().join(", "), (key) => key.reduce((total, elm) => total + elm.people, 0));
+	// const queueTimes = parkgoers.map((parkgoer) => reduceByKey(parkgoer.record, (record) => record.next, (key) => key.filter((rec) => rec.state === "WAIT").length));
+	// const activityLabels = [
+	// 	...Activity.stations.before.map((activity) => activity.label),
+	// 	...Activity.activities.map((activity) => activity.label),
+	// 	...Activity.stations.after.map((activity) => activity.label)
+	// ];
+	// const averageQueueTimes = {};
+	// activityLabels.forEach((label) => {
+	// 	const queueTime = queueTimes.filter((timeSet) => label in timeSet);
+	// 	averageQueueTimes[label] = queueTime.reduce((sum, elm) => sum + elm[label], 0)/queueTime.length;
+	// });
+	const data = {
+		statistics: {
+			parkgoers: {
+				total: parkgoers.reduce((total, elm) => total + elm.people, 0),
+				...passTypes
+			}
 		},
+		parkgoers: parkgoers,
 		activities: {
 			rides: Activity.activities.map(retrieve),
 			stations: {
@@ -528,7 +579,12 @@ function exportRecords() {
 				after: Activity.stations.after.map(retrieve),
 			},
 		},
-	}, null, "\t");
+	};
+	return data;
+}
+
+function exportRecords(records=null) {
+	const data = JSON.stringify(records || getRecords(), null, "\t");
 	const link = document.createElement("a");
 	link.download = "record.json";
 	link.href = URL.createObjectURL(new Blob([data], {type: "text/json"}));
@@ -557,5 +613,6 @@ export {
 	Activity,
 	Parkgoer,
 	iterate,
+	getRecords,
 	exportRecords,
 };

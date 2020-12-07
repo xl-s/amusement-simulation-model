@@ -92,3 +92,78 @@ The following options for `activities.consumer` are available:
 The following options for `activities.assigner` are available:
 
 * `shortestQueue`: parkgoers join the shortest queue available to them.
+
+### Output Format
+
+```
+{
+	"statistics": {
+		"parkgoers": {
+			"total": (total visitors to park),
+			(category): (visitors to park under category)
+		}
+	},
+	"parkgoers": [
+		{
+			"privileges": (string array of privileges),
+			"people": (number of people in this parkgoer group),
+			"record": [
+				{
+					"time": (time of record),
+					"state": (one of 'FREE', 'BUSY', or 'WAIT'),
+					"next": (current or next activity for parkgoer)
+				}
+			],
+			"statistics": {
+				"free": (proportion of time spent in 'FREE' state),
+				"busy": (proportion of time spent in 'BUSY' state),
+				"wait": (proportion of time spent in 'WAIT' state)
+			}
+		}
+	],
+	"activities": {
+		rides: [
+			{
+				"label": (label of ride),
+				"icon": (icon of ride),
+				"statistics": {
+					"parkgoers": (total visitors to this ride)
+				},
+				"processes": [
+					{
+						"capacity": (capacity of process),
+						"record": [
+							{
+								"time": (time of record),
+								"occupants": (occupants in process),
+								"active": (whether process is active),
+								"progress": (current progress of this process cycle),
+								"currentDuration": (current duration of this process cycle)
+							}
+						]
+					}
+				],
+				"queues": [
+					{
+						"privileges": (string array of privileges),
+						"statistics": {
+							"meanWaitTime": (mean waiting time of this queue)
+						},
+						"record": [
+							{
+								"time": (time of record),
+								"length": (length of queue)
+							}
+						]
+					}
+				]
+			}
+		],
+		"stations": {
+			"before": (same as activities.rides),
+			"after": (same as activities.rides)
+		}
+	}
+}
+```
+
