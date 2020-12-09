@@ -519,6 +519,7 @@ class Parkgoer {
 
 	retrieve() {
 		return {
+			id: this.id,
 			privileges: Array.from(this.privileges),
 			people: this.people,
 			record: this.record,
@@ -554,11 +555,7 @@ function getRecords() {
 	const parkgoers = [...Parkgoer.parkgoers.map(retrieve), ...Parkgoer.exited.map(retrieve)];
 	const passTypes = reduceByKey(parkgoers, (parkgoer) => parkgoer.privileges.sort().join(", "), (key) => key.reduce((total, elm) => total + elm.people, 0));
 	// const queueTimes = parkgoers.map((parkgoer) => reduceByKey(parkgoer.record, (record) => record.next, (key) => key.filter((rec) => rec.state === "WAIT").length));
-	// const activityLabels = [
-	// 	...Activity.stations.before.map((activity) => activity.label),
-	// 	...Activity.activities.map((activity) => activity.label),
-	// 	...Activity.stations.after.map((activity) => activity.label)
-	// ];
+	// const activityLabels = Activity.all().map((activity) => activity.label);
 	// const averageQueueTimes = {};
 	// activityLabels.forEach((label) => {
 	// 	const queueTime = queueTimes.filter((timeSet) => label in timeSet);
@@ -583,10 +580,35 @@ function getRecords() {
 	return data;
 }
 
-function exportRecords(records=null) {
+function exportCSV(records=null) {
+	records = records || getRecords();
+	const parkgoers = records.parkgoers;
+	const activityLabels = Activity.all().map((activity) => activity.label)
+	const activityHeaders = activityLabels.reduce((acc, elm) => [...acc, `${elm}_queue`, `${elm}_busy`], []);
+	const headers = ["id", "privileges", "people", ...activityHeaders, "prop.free", "prop.busy", "prop.wait"]
+	const data = [headers, ...parkgoers.sort((a, b) => a.id - b.id).map((parkgoer) => [
+			parkgoer.id,
+			parkgoer.privileges.sort().join(", "),
+			parkgoer.people,
+			...activityLabels.map((label) => [
+				parkgoer.record.filter((record) => record.next === label && record.state === "WAIT").length,
+				parkgoer.record.filter((record) => record.next === label && record.state === "BUSY").length,
+			]).reduce((acc, elm) => [...acc, ...elm], []),
+			parkgoer.statistics.free,
+			parkgoer.statistics.busy,
+			parkgoer.statistics.wait,
+	])];
+	const csv = data.map((row) => row.map((elm) => `"${elm}"`).join(",")).join("\n");
+	const link = document.createElement("a");
+	link.download = "record.csv";
+	link.href = URL.createObjectURL(new Blob([csv], {type: "text/csv"}));
+	link.click();
+}
+
+function exportJSON(records=null, name="record.json") {
 	const data = JSON.stringify(records || getRecords(), null, "\t");
 	const link = document.createElement("a");
-	link.download = "record.json";
+	link.download = name;
 	link.href = URL.createObjectURL(new Blob([data], {type: "text/json"}));
 	link.click();
 }
@@ -614,5 +636,6 @@ export {
 	Parkgoer,
 	iterate,
 	getRecords,
-	exportRecords,
+	exportCSV,
+	exportJSON,
 };

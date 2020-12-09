@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import useInterval from "react-useinterval";
 import random from "random";
-import { Process, Queue, Activity, Parkgoer, iterate, getRecords, exportRecords } from "../objects/objects";
+import { Process, Queue, Activity, Parkgoer, iterate, getRecords, exportJSON, exportCSV } from "../objects/objects";
 import { FaUser, FaFlag, FaUsers, FaUserFriends, FaRegPlayCircle, FaRegPauseCircle } from "react-icons/fa";
 import { PlayCircleOutlined, PauseCircleOutlined } from "@ant-design/icons";
 import { Button, Row, Col, List, Tooltip, Collapse, Switch, Space, Slider, Typography, Statistic, Card, Upload, Modal } from "antd";
@@ -199,7 +199,14 @@ const FinalPage = ({ visible, setVisible }: { visible: boolean, setVisible: (vis
 			onCancel={() => setVisible(false)}
 		>	
 			<Space direction="vertical" style={{width: "100%"}} size={20}>
-			<Button style={{height: 60, fontSize: 24}} block type="primary" onClick={() => exportRecords(records)}>Download Data</Button>
+			<Row gutter={12}>
+			<Col xs={12}>
+			<Button style={{height: 60, fontSize: 24}} block type="primary" onClick={() => exportJSON(records)}>Download JSON</Button>
+			</Col>
+			<Col xs={12}>
+			<Button style={{height: 60, fontSize: 24}} block type="primary" onClick={() => exportCSV(records)}>Download CSV</Button>
+			</Col>
+			</Row>
 			<Row>
 			{Object.keys(records.statistics.parkgoers).map((key, ind) => (
 				<Col xs={6} key={ind}>
@@ -344,7 +351,10 @@ const App = (): React.FC => {
 						return false;
 					}}><Button size="large" block disabled={ready}>Load File</Button></Upload>
 					</Space>
+					<Space direction="horizontal">
+					<Button size="large" onClick={() => exportJSON(Specification, "setup.json")}>Download Config</Button>
 					{done ? <Button size="large" onClick={() => setModalVisible(true)}>View Results</Button> : null}
+					</Space>
 					</Space>
 				</Col>
 				<Col xs={12}>
