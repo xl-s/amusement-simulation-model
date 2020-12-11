@@ -411,7 +411,6 @@
         {
             "label": "Roller Coaster",
             "icon": "coaster",
-            "consumer": "custom",
             "position": {
                 "angle": 72
             },
@@ -678,7 +677,6 @@
         {
             "label": "Merry-Go-Round",
             "icon": "merry",
-            "consumer": "custom",
             "position": {
                 "angle": 144
             },
@@ -726,7 +724,6 @@
         {
             "label": "Drop Tower",
             "icon": "tower",
-            "consumer": "custom",
             "position": {
                 "angle": 180
             },
@@ -773,7 +770,6 @@
         {
             "label": "Pirate Ship",
             "icon": "ship",
-            "consumer": "custom",
             "position": {
                 "angle": 216
             },
@@ -821,7 +817,6 @@
         {
             "label": "Bumper Cars",
             "icon": "bumper",
-            "consumer": "custom",
             "position": {
                 "angle": 252
             },
